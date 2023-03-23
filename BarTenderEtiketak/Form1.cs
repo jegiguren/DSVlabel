@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using Seagull.BarTender.Print;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -38,6 +40,7 @@ namespace BarTenderEtiketak
 
             using (SqlCommand command = new SqlCommand(query, conn))
             {
+                // al parametro id se le asigna el valor seleccionado en el combobox
                 command.Parameters.AddWithValue("@id", comboBox1.SelectedValue);
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -51,6 +54,39 @@ namespace BarTenderEtiketak
                     }
                 }
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Inpresio motorearen instantzia sortu
+            Engine btEngine = new Engine();
+
+            // Inpresio zerbitzariarekin konektatu
+            btEngine.Start();
+
+            // Etiketaren fitxategia ireki
+            //LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\Cycle.btw");
+            LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFroga2.btw");
+           
+
+            // Etiketaren datuak aktualizatu
+            btFormat.SubStrings["VAR1"].Value = textBox1.Text;
+            btFormat.SubStrings["VAR2"].Value = textBox2.Text;
+            btFormat.SubStrings["VAR3"].Value = textBox3.Text;
+
+
+            // Inpresora konfiguratu
+            btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
+            //btFormat.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+
+            // etiketa inprimatu
+            btFormat.Print();
+
+            // etiketaren dokumentua itxi
+            btFormat.Close(SaveOptions.DoNotSaveChanges);
+
+            // Inpresio motorea gelditu
+            btEngine.Stop();
         }
     }
 }

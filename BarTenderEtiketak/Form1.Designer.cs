@@ -31,17 +31,18 @@
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.etiketakBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.etiketa_DBDataSet = new BarTenderEtiketak.Etiketa_DBDataSet();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
-            this.etiketa_DBDataSet = new BarTenderEtiketak.Etiketa_DBDataSet();
-            this.etiketakBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.etiketakTableAdapter = new BarTenderEtiketak.Etiketa_DBDataSetTableAdapters.etiketakTableAdapter();
-            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).BeginInit();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -49,9 +50,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(77, 56);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 13);
+            this.label1.Size = new System.Drawing.Size(147, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Aukeratu etiketa";
+            this.label1.Text = "Aukeratu inprimatzeko etiketa";
             // 
             // comboBox1
             // 
@@ -64,6 +65,16 @@
             this.comboBox1.TabIndex = 1;
             this.comboBox1.ValueMember = "id";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // etiketakBindingSource
+            // 
+            this.etiketakBindingSource.DataMember = "etiketak";
+            this.etiketakBindingSource.DataSource = this.etiketa_DBDataSet;
+            // 
+            // etiketa_DBDataSet
+            // 
+            this.etiketa_DBDataSet.DataSetName = "Etiketa_DBDataSet";
+            this.etiketa_DBDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // label2
             // 
@@ -113,25 +124,26 @@
             this.textBox3.Size = new System.Drawing.Size(100, 20);
             this.textBox3.TabIndex = 7;
             // 
-            // etiketa_DBDataSet
-            // 
-            this.etiketa_DBDataSet.DataSetName = "Etiketa_DBDataSet";
-            this.etiketa_DBDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // etiketakBindingSource
-            // 
-            this.etiketakBindingSource.DataMember = "etiketak";
-            this.etiketakBindingSource.DataSource = this.etiketa_DBDataSet;
-            // 
             // etiketakTableAdapter
             // 
             this.etiketakTableAdapter.ClearBeforeFill = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(248, 320);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "Print";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(553, 366);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
@@ -143,8 +155,8 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -163,6 +175,7 @@
         private Etiketa_DBDataSet etiketa_DBDataSet;
         private System.Windows.Forms.BindingSource etiketakBindingSource;
         private Etiketa_DBDataSetTableAdapters.etiketakTableAdapter etiketakTableAdapter;
+        private System.Windows.Forms.Button button1;
     }
 }
 

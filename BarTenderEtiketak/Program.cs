@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace BarTenderEtiketak
 {
     internal static class Program
@@ -14,9 +15,11 @@ namespace BarTenderEtiketak
         [STAThread]
         static void Main()
         {
+            XmlReader reader= new XmlReader (@"C:\bt\XML\entrada20180904111044281.xml");
+            reader.ReadXml();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Application.Run(new Form1());
         }
     }
 }
