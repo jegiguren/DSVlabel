@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -20,6 +21,8 @@ namespace BarTenderEtiketak
     {
 
         SqlConnection conn = new SqlConnection("Data Source = itd2682303; Initial Catalog = Etiketa_DB; User ID = sa; Password=2023SQLServer2019");
+
+        
         public Form1()
         {
             InitializeComponent();
@@ -100,67 +103,79 @@ namespace BarTenderEtiketak
             // Inpresio zerbitzariarekin konektatu
             btEngine.Start();
            
-
-            // Etiketaren fitxategia ireki
-            //LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\Cycle.btw");
+            // Etiketaren fitxategia ireki eta etiketa aldagaian gorde
             LabelFormatDocument etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
 
+            //XmlDocument klaseko objetua sortu
             XmlDocument xmlDoc = new XmlDocument();
+
+            // xml dokumentuaren ruta jaso
             string ruta = @"C:\bt\XML\entrada20180904104808804.xml";
+
+            //xml-a kargatu aldagaian
             xmlDoc.Load(ruta);
 
+            //root nodoa(aurrena) aldagai batean gorde
             XmlNode rootNode = xmlDoc.DocumentElement;
 
             BaloreakAsignatu(rootNode, etiketa);
            
-
-            // Inpresora konfiguratu
-            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
-            etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
-
-            // etiketa inprimatu
-            etiketa.Print();
-
-            // etiketaren dokumentua itxi
-            etiketa.Close(SaveOptions.DoNotSaveChanges);
-
-            // Inpresio motorea gelditu
-            btEngine.Stop();
         }
 
 
         private static void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
         {
+            string nodoIzena = "";
+            string nodoBalorea = "";
+            SubStrings aldagaiak = null;
+
             foreach (XmlNode nodo in nodoXml.ChildNodes)
             {
-                // Obtener el nombre del nodo
-                string nodoIzena = nodo.Name;
+                if(nodo.Name != "Numeros_Serie") {
 
-                // Obtener el valor del nodo
-                string nodoBalorea = nodo.InnerText;
+                    // Obtener el nombre del nodo
+                    nodoIzena = nodo.Name;
 
-                // Obtener las variables de la etiqueta
-                SubStrings aldagaiak = etiketa.SubStrings;
+                    // Obtener el valor del nodo
+                    nodoBalorea = nodo.InnerText;
 
-                // Recorrer las variables de la etiqueta
-                foreach (SubString aldagaia in aldagaiak)
-                {
-                    // Comparar el nombre de la variable con el nombre de la variable a asignar
-                    if (aldagaia.Name == nodoIzena)
+                    // Obtener las variables de la etiqueta
+                    aldagaiak = etiketa.SubStrings;
+
+                    // Recorrer las variables de la etiqueta
+                    foreach (SubString aldagaia in aldagaiak)
                     {
-                        // Asignar el valor de la variable a la variable de la etiqueta
-                        aldagaia.Value = nodoBalorea;
+                        // Comparar el nombre de la variable con el nombre de la variable a asignar
+                        if (aldagaia.Name == nodoIzena)
+                        {
+                            // Asignar el valor de la variable a la variable de la etiqueta
+                            aldagaia.Value = nodoBalorea;
+                        }
                     }
                 }
 
-
-                // Si el nodo tiene hijos, llamar recursivamente a la función
-                if (nodo.HasChildNodes)
+                //XML dokumentoan "Numeros_Serie" aurkitzen duenean egingo duena
+                else
                 {
-                    BaloreakAsignatu(nodo, etiketa);
+                    foreach (XmlNode nodoSerial in nodo.ChildNodes)
+                    {
+                        foreach (SubString aldagaia in aldagaiak)
+                        {
+                            // Comparar el nombre de la variable con el nombre de la variable a asignar
+                            if (aldagaia.Name == "Serie")
+                            {
+                                //nodoaren balore aldagaia batean gorde
+                                nodoBalorea=nodoSerial.InnerText;
+
+                                // Asignar el valor de la variable a la variable de la etiqueta
+                                aldagaia.Value = nodoBalorea;
+
+                                Inprimatu(etiketa);
+                            }
+                        }
+                    }
                 }
             }
-
         }
 
 
@@ -171,17 +186,16 @@ namespace BarTenderEtiketak
             // Inpresio zerbitzariarekin konektatu
             btEngine.Start();
 
-            LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFroga2.btw");
-
             // Inpresora konfiguratu
-            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
+            //etiketa.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
             etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
 
             // etiketa inprimatu
             etiketa.Print();
+            Thread.Sleep(5000);
 
             // etiketaren dokumentua itxi
-            etiketa.Close(SaveOptions.DoNotSaveChanges);
+            //etiketa.Close(SaveOptions.DoNotSaveChanges);
 
             btEngine.Stop();
 
