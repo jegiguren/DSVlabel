@@ -41,6 +41,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.etiketakTableAdapter = new BarTenderEtiketak.Etiketa_DBDataSetTableAdapters.etiketakTableAdapter();
             this.button1 = new System.Windows.Forms.Button();
+            this.Xml_print = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).BeginInit();
             this.SuspendLayout();
@@ -79,7 +80,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(167, 179);
+            this.label2.Location = new System.Drawing.Point(28, 163);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(30, 13);
             this.label2.TabIndex = 2;
@@ -88,7 +89,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(169, 223);
+            this.label3.Location = new System.Drawing.Point(30, 207);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 3;
@@ -97,7 +98,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(167, 269);
+            this.label4.Location = new System.Drawing.Point(28, 253);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(42, 13);
             this.label4.TabIndex = 4;
@@ -105,21 +106,21 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(248, 172);
+            this.textBox1.Location = new System.Drawing.Point(109, 156);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 20);
             this.textBox1.TabIndex = 5;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(248, 216);
+            this.textBox2.Location = new System.Drawing.Point(109, 200);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 6;
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(248, 262);
+            this.textBox3.Location = new System.Drawing.Point(109, 246);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(100, 20);
             this.textBox3.TabIndex = 7;
@@ -130,7 +131,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(248, 320);
+            this.button1.Location = new System.Drawing.Point(109, 304);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 8;
@@ -138,11 +139,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // Xml_print
+            // 
+            this.Xml_print.Location = new System.Drawing.Point(369, 156);
+            this.Xml_print.Name = "Xml_print";
+            this.Xml_print.Size = new System.Drawing.Size(75, 23);
+            this.Xml_print.TabIndex = 9;
+            this.Xml_print.Text = "XML PRINT";
+            this.Xml_print.UseVisualStyleBackColor = true;
+            this.Xml_print.Click += new System.EventHandler(this.Xml_print_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(553, 366);
+            this.Controls.Add(this.Xml_print);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
@@ -176,6 +188,7 @@
         private System.Windows.Forms.BindingSource etiketakBindingSource;
         private Etiketa_DBDataSetTableAdapters.etiketakTableAdapter etiketakTableAdapter;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button Xml_print;
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿
 using Seagull.BarTender.Print;
+using Seagull.BarTender.PrintServer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,9 +8,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace BarTenderEtiketak
 {
@@ -76,8 +79,8 @@ namespace BarTenderEtiketak
 
 
             // Inpresora konfiguratu
-            btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
-            //btFormat.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
+            btFormat.PrintSetup.PrinterName = "Microsoft Print to Pdf";
 
             // etiketa inprimatu
             btFormat.Print();
@@ -88,5 +91,103 @@ namespace BarTenderEtiketak
             // Inpresio motorea gelditu
             btEngine.Stop();
         }
+
+        private void Xml_print_Click(object sender, EventArgs e)
+        {
+            // Inpresio motorearen instantzia sortu
+            Engine btEngine = new Engine();
+
+            // Inpresio zerbitzariarekin konektatu
+            btEngine.Start();
+           
+
+            // Etiketaren fitxategia ireki
+            //LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\Cycle.btw");
+            LabelFormatDocument etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
+
+            XmlDocument xmlDoc = new XmlDocument();
+            string ruta = @"C:\bt\XML\entrada20180904104808804.xml";
+            xmlDoc.Load(ruta);
+
+            XmlNode rootNode = xmlDoc.DocumentElement;
+
+            BaloreakAsignatu(rootNode, etiketa);
+           
+
+            // Inpresora konfiguratu
+            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
+            etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+
+            // etiketa inprimatu
+            etiketa.Print();
+
+            // etiketaren dokumentua itxi
+            etiketa.Close(SaveOptions.DoNotSaveChanges);
+
+            // Inpresio motorea gelditu
+            btEngine.Stop();
+        }
+
+
+        private static void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
+        {
+            foreach (XmlNode nodo in nodoXml.ChildNodes)
+            {
+                // Obtener el nombre del nodo
+                string nodoIzena = nodo.Name;
+
+                // Obtener el valor del nodo
+                string nodoBalorea = nodo.InnerText;
+
+                // Obtener las variables de la etiqueta
+                SubStrings aldagaiak = etiketa.SubStrings;
+
+                // Recorrer las variables de la etiqueta
+                foreach (SubString aldagaia in aldagaiak)
+                {
+                    // Comparar el nombre de la variable con el nombre de la variable a asignar
+                    if (aldagaia.Name == nodoIzena)
+                    {
+                        // Asignar el valor de la variable a la variable de la etiqueta
+                        aldagaia.Value = nodoBalorea;
+                    }
+                }
+
+
+                // Si el nodo tiene hijos, llamar recursivamente a la función
+                if (nodo.HasChildNodes)
+                {
+                    BaloreakAsignatu(nodo, etiketa);
+                }
+            }
+
+        }
+
+
+        private static void Inprimatu (LabelFormatDocument etiketa)
+        {
+            Engine btEngine = new Engine();
+
+            // Inpresio zerbitzariarekin konektatu
+            btEngine.Start();
+
+            LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFroga2.btw");
+
+            // Inpresora konfiguratu
+            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
+            etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+
+            // etiketa inprimatu
+            etiketa.Print();
+
+            // etiketaren dokumentua itxi
+            etiketa.Close(SaveOptions.DoNotSaveChanges);
+
+            btEngine.Stop();
+
+        }
+
+
+
     }
 }
