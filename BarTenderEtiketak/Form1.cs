@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -19,84 +20,18 @@ namespace BarTenderEtiketak
 {
     public partial class Form1 : Form
     {
+        private AutoResetEvent fileCreatedEvent = new AutoResetEvent(false);
+        string xmlFilePath;//ERP-ak sortzen duen xml-aren ruta osoa
 
-        SqlConnection conn = new SqlConnection("Data Source = itd2682303; Initial Catalog = Etiketa_DB; User ID = sa; Password=2023SQLServer2019");
-
-        
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Xml_print_Click(object sender, EventArgs e)
         {
-            // TODO: esta línea de código carga datos en la tabla 'etiketa_DBDataSet.etiketak' Puede moverla o quitarla según sea necesario.
-            this.etiketakTableAdapter.Fill(this.etiketa_DBDataSet.etiketak);
+            string directoryPath = @"C:\bt\XML";
 
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string query = "SELECT mota, pisua, kolorea FROM etiketak WHERE id = @id";
-
-            if (conn.State != ConnectionState.Open)
-            {
-                conn.Open();
-            }
-
-            using (SqlCommand command = new SqlCommand(query, conn))
-            {
-                // al parametro id se le asigna el valor seleccionado en el combobox
-                command.Parameters.AddWithValue("@id", comboBox1.SelectedValue);
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        // Llena los TextBox con los valores correspondientes
-                        textBox1.Text = reader["mota"].ToString();
-                        textBox2.Text = reader["pisua"].ToString();
-                        textBox3.Text = reader["kolorea"].ToString();
-                    }
-                }
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            // Inpresio motorearen instantzia sortu
-            Engine btEngine = new Engine();
-
-            // Inpresio zerbitzariarekin konektatu
-            btEngine.Start();
-
-            // Etiketaren fitxategia ireki
-            //LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\Cycle.btw");
-            LabelFormatDocument btFormat = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFroga2.btw");
-           
-
-            // Etiketaren datuak aktualizatu
-            btFormat.SubStrings["VAR1"].Value = textBox1.Text;
-            btFormat.SubStrings["VAR2"].Value = textBox2.Text;
-            btFormat.SubStrings["VAR3"].Value = textBox3.Text;
-
-
-            // Inpresora konfiguratu
-            //btFormat.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
-            btFormat.PrintSetup.PrinterName = "Microsoft Print to Pdf";
-
-            // etiketa inprimatu
-            btFormat.Print();
-
-            // etiketaren dokumentua itxi
-            btFormat.Close(SaveOptions.DoNotSaveChanges);
-
-            // Inpresio motorea gelditu
-            btEngine.Stop();
-        }
-
-        private void Xml_print_Click(object sender, EventArgs e)
-        {
             // Inpresio motorearen instantzia sortu
             Engine btEngine = new Engine();
 
@@ -106,17 +41,32 @@ namespace BarTenderEtiketak
             // Etiketaren fitxategia ireki eta etiketa aldagaian gorde
             LabelFormatDocument etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
 
-            //XmlDocument klaseko objetua sortu
-            XmlDocument xmlDoc = new XmlDocument();
+            //XmlDocument klaseko objetuak sortu
+            XmlDocument xmlDoc = new XmlDocument(); //ERP-ak sortuko duen xml-a
+            XmlDocument xmlWebService = new XmlDocument(); //Web zerbitzutik jasoko dugun xml-a
+            XmlDocument xmlosoa = new XmlDocument(); //aurreko 2 xml-ak juntatuta lortzen dugun xml-a
 
-            // xml dokumentuaren ruta jaso
-            string ruta = @"C:\bt\XML\entrada20180904104808804.xml";
+            begiratuKarpeta(directoryPath);
 
+            // ERP-k sortutako xml dokumentuaren ruta jaso
+            //string ruta = @"C:\bt\XML\entrada20180904104808804.xml";
             //xml-a kargatu aldagaian
-            xmlDoc.Load(ruta);
+            //xmlDoc.Load(@"C:\bt\XML\entrada20180904104808804.xml");
+            xmlDoc.Load(xmlFilePath);
+
+            //WsReader klaseko objetua sortu
+            WsReader wsreader = new WsReader();
+            //web zerbitzua kontsumitu parametro bezala kodigoa bidaliz eta emaitza xml batean gorde
+            xmlWebService = await wsreader.WsKontsumitu("5846005");
+            
+            //ERP-aren xml-a eta Web zerbitzuaren xml- juntatu
+            xmlosoa = JuntatuXmlak(xmlWebService, xmlDoc);
+            Console.WriteLine(xmlosoa.OuterXml);
 
             //root nodoa(aurrena) aldagai batean gorde
-            XmlNode rootNode = xmlDoc.DocumentElement;
+            XmlNode rootNode = xmlosoa.DocumentElement;
+
+            
 
             BaloreakAsignatu(rootNode, etiketa);
            
@@ -192,7 +142,7 @@ namespace BarTenderEtiketak
 
             // etiketa inprimatu
             etiketa.Print();
-            Thread.Sleep(5000);
+            Thread.Sleep(1000);
 
             // etiketaren dokumentua itxi
             //etiketa.Close(SaveOptions.DoNotSaveChanges);
@@ -201,7 +151,80 @@ namespace BarTenderEtiketak
 
         }
 
+        private async void btn_WsKontsumitu_Click (object sender, EventArgs e)
+        {
+            XmlDocument xmlWebService = new XmlDocument();
+            WsReader wsreader = new WsReader();
+            xmlWebService= await wsreader.WsKontsumitu("5846005");
+            Console.WriteLine(xmlWebService.OuterXml);
 
+        }
+
+
+        public XmlDocument JuntatuXmlak (XmlDocument xmlDoc1, XmlDocument xmlDoc2)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            // Crear el nodo raíz
+            XmlNode rootNode = xmlDoc.CreateElement("root");
+            xmlDoc.AppendChild(rootNode);
+
+            // Importar los nodos hijos del primer documento
+            foreach (XmlNode node in xmlDoc1.DocumentElement.ChildNodes)
+            {
+                XmlNode importedNode = xmlDoc.ImportNode(node, true);
+                rootNode.AppendChild(importedNode);
+            }
+
+            // Importar los nodos hijos del segundo documento
+            foreach (XmlNode node in xmlDoc2.DocumentElement.ChildNodes)
+            {
+                XmlNode importedNode = xmlDoc.ImportNode(node, true);
+                rootNode.AppendChild(importedNode);
+            }
+
+            return xmlDoc;
+        }
+
+
+
+        private void begiratuKarpeta(string filePath)
+        {
+            // Crear un objeto FileSystemWatcher
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = filePath;
+
+            // Vigilar solo los archivos con extensión .xml
+            watcher.Filter = "*.xml";
+
+            // Suscribirse al evento cuando se detecte un cambio en la carpeta
+            watcher.Created += OnChanged;
+
+            // Iniciar la vigilancia
+            watcher.EnableRaisingEvents = true;
+
+            // Esperar a que se detecte un archivo
+            Console.WriteLine("XML karpeta zaintzen...", filePath);
+            Console.ReadLine();
+
+            // Esperar a que se cree un archivo en la carpeta
+            fileCreatedEvent.WaitOne();
+
+            // Leer el archivo XML
+            Console.WriteLine(xmlFilePath + " fitxategia aurkitua da");
+            //xmlIzena = Path.GetFileName(xmlFilePath); //fitxategiaren izena lortu
+
+        }
+
+
+        private void OnChanged(object source, FileSystemEventArgs e)
+        {
+            // Leer el archivo XML
+            xmlFilePath = e.FullPath;
+
+            // Señalizar el evento de que se ha creado un archivo en la carpeta
+            fileCreatedEvent.Set();
+        }
 
     }
 }

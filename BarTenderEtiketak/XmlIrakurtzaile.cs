@@ -7,11 +7,11 @@ using System.Xml;
 
 namespace BarTenderEtiketak
 {
-    public class XmlReader
+    public class XmlIrakurtzaile
     {
         private XmlDocument xmlDoc;
 
-        public XmlReader(string filePath)
+        public XmlIrakurtzaile(string filePath)
         {
             xmlDoc = new XmlDocument();
             xmlDoc.Load(filePath);
