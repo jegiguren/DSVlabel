@@ -33,8 +33,8 @@
             this.etiketa_DBDataSet = new BarTenderEtiketak.Etiketa_DBDataSet();
             this.etiketakTableAdapter = new BarTenderEtiketak.Etiketa_DBDataSetTableAdapters.etiketakTableAdapter();
             this.Xml_print = new System.Windows.Forms.Button();
-            this.btn_WsKontsumitu = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
+            this.btn_Gelditu = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).BeginInit();
             this.SuspendLayout();
@@ -59,19 +59,9 @@
             this.Xml_print.Name = "Xml_print";
             this.Xml_print.Size = new System.Drawing.Size(230, 54);
             this.Xml_print.TabIndex = 9;
-            this.Xml_print.Text = "XML PRINT";
+            this.Xml_print.Text = "MARTXAN JARRI";
             this.Xml_print.UseVisualStyleBackColor = true;
             this.Xml_print.Click += new System.EventHandler(this.Xml_print_Click);
-            // 
-            // btn_WsKontsumitu
-            // 
-            this.btn_WsKontsumitu.Location = new System.Drawing.Point(465, 33);
-            this.btn_WsKontsumitu.Name = "btn_WsKontsumitu";
-            this.btn_WsKontsumitu.Size = new System.Drawing.Size(151, 54);
-            this.btn_WsKontsumitu.TabIndex = 10;
-            this.btn_WsKontsumitu.Text = "WS kontsumitu";
-            this.btn_WsKontsumitu.UseVisualStyleBackColor = true;
-            this.btn_WsKontsumitu.Click += new System.EventHandler(this.btn_WsKontsumitu_Click);
             // 
             // listBox1
             // 
@@ -81,13 +71,23 @@
             this.listBox1.Size = new System.Drawing.Size(230, 407);
             this.listBox1.TabIndex = 11;
             // 
+            // btn_Gelditu
+            // 
+            this.btn_Gelditu.Location = new System.Drawing.Point(309, 33);
+            this.btn_Gelditu.Name = "btn_Gelditu";
+            this.btn_Gelditu.Size = new System.Drawing.Size(99, 54);
+            this.btn_Gelditu.TabIndex = 12;
+            this.btn_Gelditu.Text = "GELDITU";
+            this.btn_Gelditu.UseVisualStyleBackColor = true;
+            this.btn_Gelditu.Click += new System.EventHandler(this.btn_Gelditu_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(690, 644);
+            this.Controls.Add(this.btn_Gelditu);
             this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.btn_WsKontsumitu);
             this.Controls.Add(this.Xml_print);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -102,8 +102,8 @@
         private System.Windows.Forms.BindingSource etiketakBindingSource;
         private Etiketa_DBDataSetTableAdapters.etiketakTableAdapter etiketakTableAdapter;
         private System.Windows.Forms.Button Xml_print;
-        private System.Windows.Forms.Button btn_WsKontsumitu;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button btn_Gelditu;
     }
 }
 

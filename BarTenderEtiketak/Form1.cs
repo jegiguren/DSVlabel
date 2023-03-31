@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace BarTenderEtiketak
     {
         private AutoResetEvent fileCreatedEvent = new AutoResetEvent(false);
         string xmlFilePath;//ERP-ak sortzen duen xml-aren ruta osoa
+       
 
         public Form1()
         {
@@ -31,6 +33,7 @@ namespace BarTenderEtiketak
         private async void Xml_print_Click(object sender, EventArgs e)
         {
             string directoryPath = @"C:\bt\XML";
+            KoloreaAldatu();
 
             // Inpresio motorearen instantzia sortu
             Engine btEngine = new Engine();
@@ -46,18 +49,19 @@ namespace BarTenderEtiketak
             XmlDocument xmlWebService = new XmlDocument(); //Web zerbitzutik jasoko dugun xml-a
             XmlDocument xmlosoa = new XmlDocument(); //aurreko 2 xml-ak juntatuta lortzen dugun xml-a
 
+            
             begiratuKarpeta(directoryPath);
 
-            // ERP-k sortutako xml dokumentuaren ruta jaso
-            //string ruta = @"C:\bt\XML\entrada20180904104808804.xml";
-            //xml-a kargatu aldagaian
-            //xmlDoc.Load(@"C:\bt\XML\entrada20180904104808804.xml");
+            //aldagaian kargatu xml-a
             xmlDoc.Load(xmlFilePath);
+
+            //xml-tik kodigo artikulua atera gero Ws-ari bidaltzeko
+            string codigoArticulo = KodigoaAtera(xmlDoc);
 
             //WsReader klaseko objetua sortu
             WsReader wsreader = new WsReader();
             //web zerbitzua kontsumitu parametro bezala kodigoa bidaliz eta emaitza xml batean gorde
-            xmlWebService = await wsreader.WsKontsumitu("5846005");
+            xmlWebService = await wsreader.WsKontsumitu(codigoArticulo);
             
             //ERP-aren xml-a eta Web zerbitzuaren xml- juntatu
             xmlosoa = JuntatuXmlak(xmlWebService, xmlDoc);
@@ -66,10 +70,29 @@ namespace BarTenderEtiketak
             //root nodoa(aurrena) aldagai batean gorde
             XmlNode rootNode = xmlosoa.DocumentElement;
 
-            
 
             BaloreakAsignatu(rootNode, etiketa);
            
+        }
+
+        private string KodigoaAtera(XmlDocument ErpXml) {
+
+            // Obtener el nodo "Codigo_Articulo"
+            XmlNode codigoArticuloNode = ErpXml.SelectSingleNode("//Codigo_Articulo");
+
+            // Obtener el valor del nodo y asignarlo a una variable
+            string codigoArticulo = null;
+            try
+            {
+                codigoArticulo = codigoArticuloNode.InnerText;
+                return codigoArticulo;
+            }
+            catch (NullReferenceException ex)
+            {
+                // Manejar la excepción si el nodo no se encuentra
+                Console.WriteLine("No se encontró el nodo 'Codigo_Articulo'");
+                return null;
+            }
         }
 
 
@@ -224,7 +247,32 @@ namespace BarTenderEtiketak
 
             // Señalizar el evento de que se ha creado un archivo en la carpeta
             fileCreatedEvent.Set();
+
+            //crea un objeto de la clase XmlDeleter
+            XmlDeleter deleter = new XmlDeleter();
+
+            //borra el archivo de la carpeta "XML" y guarda una copia en la carpeta "Xml kopiak"
+            Thread.Sleep(500);
+            deleter.ezabatuXml();
         }
 
+        private void KoloreaAldatu()
+        {
+            if (Xml_print.BackColor != Color.LightGreen)
+            {
+                // Cambiar el color del botón a verde si no lo está
+                Xml_print.BackColor = Color.LightGreen;
+            }
+            else
+            {
+                // Cambiar el color del botón a su color original si ya está en verde
+                Xml_print.BackColor = DefaultBackColor;
+            }
+        }
+
+        private void btn_Gelditu_Click(object sender, EventArgs e)
+        {
+            
+        }
     }
 }

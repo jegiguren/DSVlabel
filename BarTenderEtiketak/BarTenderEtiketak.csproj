@@ -106,6 +106,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="WsReader.cs" />
+    <Compile Include="XmlDeleter.cs" />
     <Compile Include="XmlIrakurtzaile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
