@@ -25,6 +25,7 @@ namespace BarTenderEtiketak
                     // Mover el archivo a la carpeta de destino
                     File.Move(fitxategia, Path.Combine(destino, Path.GetFileName(fitxategia)));
                     Console.WriteLine("Fitxategia ongi mugitu da Xml kopiak karpetara");
+                    Console.WriteLine("XML karpeta zaintzen...");
                 }
                 else
                 {
