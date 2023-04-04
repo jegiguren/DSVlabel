@@ -24,14 +24,20 @@ namespace BarTenderEtiketak
         string directoryPath = @"C:\bt\XML";//ERP-ak xml-ak uzten dituen karpeta
         private AutoResetEvent fileCreatedEvent = new AutoResetEvent(false);
         string xmlFilePath;//ERP-ak sortzen duen xml-aren ruta osoa (karpeta+fitxategi izena)
-        XmlDocument xmlDoc, xmlWebService, xmlosoa;
+        XmlDocument xmlDoc, xmlWebService, xmlosoa; 
         LabelFormatDocument etiketa;
         FileSystemWatcher watcher = null;
+        private Thread begiraleThread;
+        private bool begira = false;
+        List<string> fileNames = new List<string>();
+        string etiketaFormatoa;
+        Engine btEngine;
 
 
         public Form1()
         {
             InitializeComponent();
+            btn_Gelditu.Enabled = false;
         }
 
         private async void Xml_print_Click(object sender, EventArgs e)
@@ -39,21 +45,28 @@ namespace BarTenderEtiketak
             KoloreaAldatu();
 
             // Inpresio motorearen instantzia sortu
-            Engine btEngine = new Engine();
+            btEngine = new Engine();
 
             // Inpresio zerbitzariarekin konektatu
             btEngine.Start();
 
             // Etiketaren fitxategia ireki eta etiketa aldagaian gorde
-            etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
+            //etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
+            //etiketa = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORM00" +etiketaFormatoa+ ".btw");
 
             //XmlDocument klaseko objetuak sortu
             xmlDoc = new XmlDocument(); //ERP-ak sortuko duen xml-a
             xmlWebService = new XmlDocument(); //Web zerbitzutik jasoko dugun xml-a
             xmlosoa = new XmlDocument(); //aurreko 2 xml-ak juntatuta lortzen dugun xml-a
 
+            //begiralea martxan jarri hari batean
+            begiraleThread = new Thread(() => begiratuKarpeta(directoryPath));
+            begiraleThread.Start();
 
-            begiratuKarpeta(directoryPath);
+            Xml_print.Enabled = false;
+            Xml_print.Text = "BEGIRALEA MARTXAN DAGO...";
+            btn_Gelditu.Enabled = true;
+            begira = true;
     
         }
 
@@ -103,7 +116,14 @@ namespace BarTenderEtiketak
                 //root nodoa (aurrena) aldagai batean gorde
                 XmlNode rootNode = xmlosoa.DocumentElement;
 
-                BaloreakAsignatu(rootNode, etiketa);
+                //WS-ko xml-tik etiketa formatoa atera
+                etiketaFormatoa = EtiketaFormatoaAtera(xmlWebService);
+
+                //etiketa ireki formatoaren arabera
+                etiketa = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORM00" + etiketaFormatoa + ".btw");
+
+
+                BaloreakAsignatu(rootNode, etiketa);          
 
                 //crea un objeto de la clase XmlDeleter
                 XmlDeleter deleter = new XmlDeleter();
@@ -115,7 +135,6 @@ namespace BarTenderEtiketak
 
         }
 
-
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             // Leer el archivo XML
@@ -124,7 +143,14 @@ namespace BarTenderEtiketak
             // Señalizar el evento de que se ha creado un archivo en la carpeta
             fileCreatedEvent.Set();
 
-            
+            // Agregar el nombre del archivo a la lista
+            fileNames.Add(e.Name);
+
+            // Actualizar el contenido del ListBox con los nombres de los archivos
+            listBox1.Invoke(new Action(() => {
+                listBox1.Items.Clear();
+                listBox1.Items.AddRange(fileNames.ToArray());
+            }));
         }
 
         private static void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
@@ -204,6 +230,39 @@ namespace BarTenderEtiketak
             }
         }
 
+        private string EtiketaFormatoaAtera(XmlDocument ErpWs)
+        {
+
+            // Obtener el nodo "Codigo_Articulo"
+            XmlNode codigoArticuloNode = ErpWs.SelectSingleNode("//etiketaFormato");
+
+            // Obtener el valor del nodo y asignarlo a una variable
+            string etiketaFormato = null;
+            try
+            {
+                etiketaFormato = codigoArticuloNode.InnerText;
+                int etiketaFormatoZenb = Int32.Parse(etiketaFormato);
+
+                if (etiketaFormatoZenb < 10)
+                {
+                    etiketaFormato = etiketaFormatoZenb.ToString();
+                    etiketaFormato = "0" + etiketaFormato;
+                }
+
+                else
+                {
+                    etiketaFormato = etiketaFormatoZenb.ToString();
+                }
+                return etiketaFormato;
+            }
+
+            catch (NullReferenceException ex)
+            {
+                // Manejar la excepción si el nodo no se encuentra
+                Console.WriteLine("No se encontró el nodo 'Codigo_Articulo'");
+                return null;
+            }
+        }
 
         private static void Inprimatu(LabelFormatDocument etiketa)
         {
@@ -235,7 +294,6 @@ namespace BarTenderEtiketak
             Console.WriteLine(xmlWebService.OuterXml);
 
         }
-
 
         public XmlDocument JuntatuXmlak(XmlDocument xmlDoc1, XmlDocument xmlDoc2)
         {
@@ -278,6 +336,18 @@ namespace BarTenderEtiketak
 
         private void btn_Gelditu_Click(object sender, EventArgs e)
         {
+            btn_Gelditu.Enabled = false;
+
+            watcher.EnableRaisingEvents = false; // Desactivar la generación de eventos del objeto FileSystemWatcher
+            watcher.Created -= OnChanged; // Desuscribirse del evento cuando se detecte un cambio en la carpeta
+            watcher.Dispose(); // Liberar los recursos del objeto FileSystemWatcher
+            fileCreatedEvent.Reset(); // Resetear el AutoResetEvent utilizado para esperar la creación de archivos en la carpeta
+
+            Xml_print.Enabled = true;
+            KoloreaAldatu();
+            Xml_print.Text = "BEGIRALEA MARTXAN JARRI";
+            
+
             if (watcher != null)
             {
                 watcher.Created -= OnChanged;
