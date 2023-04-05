@@ -50,10 +50,6 @@ namespace BarTenderEtiketak
             // Inpresio zerbitzariarekin konektatu
             btEngine.Start();
 
-            // Etiketaren fitxategia ireki eta etiketa aldagaian gorde
-            //etiketa = btEngine.Documents.Open(@"C:\bt\FrogakYoko\EtiketaFrogaXml.btw");
-            //etiketa = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORM00" +etiketaFormatoa+ ".btw");
-
             //XmlDocument klaseko objetuak sortu
             xmlDoc = new XmlDocument(); //ERP-ak sortuko duen xml-a
             xmlWebService = new XmlDocument(); //Web zerbitzutik jasoko dugun xml-a
@@ -131,6 +127,12 @@ namespace BarTenderEtiketak
                 //borra el archivo de la carpeta "XML" y guarda una copia en la carpeta "Xml kopiak"
                 Thread.Sleep(500);
                 deleter.ezabatuXml();
+
+                //Limpiar el listbox despues de imprimir
+                Invoke(new Action(() =>
+                {
+                    listBox1.Items.Clear();
+                }));
             }
 
         }
@@ -153,7 +155,7 @@ namespace BarTenderEtiketak
             }));
         }
 
-        private static void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
+        private void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
         {
             string nodoIzena = "";
             string nodoBalorea = "";
@@ -207,6 +209,7 @@ namespace BarTenderEtiketak
                     }
                 }
             }
+            
         }
 
         private string KodigoaAtera(XmlDocument ErpXml)
@@ -219,6 +222,7 @@ namespace BarTenderEtiketak
             string codigoArticulo = null;
             try
             {
+                //xml-tik jasotako kodigoa aldagaian gorde
                 codigoArticulo = codigoArticuloNode.InnerText;
                 return codigoArticulo;
             }
@@ -266,6 +270,7 @@ namespace BarTenderEtiketak
 
         private static void Inprimatu(LabelFormatDocument etiketa)
         {
+            //inpresio motorea sortu
             Engine btEngine = new Engine();
 
             // Inpresio zerbitzariarekin konektatu
@@ -283,15 +288,6 @@ namespace BarTenderEtiketak
             //etiketa.Close(SaveOptions.DoNotSaveChanges);
 
             btEngine.Stop();
-
-        }
-
-        private async void btn_WsKontsumitu_Click(object sender, EventArgs e)
-        {
-            XmlDocument xmlWebService = new XmlDocument();
-            WsReader wsreader = new WsReader();
-            xmlWebService = await wsreader.WsKontsumitu("5846005");
-            Console.WriteLine(xmlWebService.OuterXml);
 
         }
 

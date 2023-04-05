@@ -30,29 +30,20 @@
         {
             this.components = new System.ComponentModel.Container();
             this.etiketakBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.etiketa_DBDataSet = new BarTenderEtiketak.Etiketa_DBDataSet();
-            this.etiketakTableAdapter = new BarTenderEtiketak.Etiketa_DBDataSetTableAdapters.etiketakTableAdapter();
             this.Xml_print = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.btn_Gelditu = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // etiketakBindingSource
             // 
             this.etiketakBindingSource.DataMember = "etiketak";
-            this.etiketakBindingSource.DataSource = this.etiketa_DBDataSet;
             // 
-            // etiketa_DBDataSet
+         
             // 
-            this.etiketa_DBDataSet.DataSetName = "Etiketa_DBDataSet";
-            this.etiketa_DBDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // etiketakTableAdapter
-            // 
-            this.etiketakTableAdapter.ClearBeforeFill = true;
+           
             // 
             // Xml_print
             // 
@@ -87,9 +78,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(52, 120);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
+            this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 13;
-            this.label1.Text = "Inprimitzera...";
+            this.label1.Text = "Inprimatzen...";
             // 
             // Form1
             // 
@@ -103,16 +94,13 @@
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.etiketakBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.etiketa_DBDataSet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private Etiketa_DBDataSet etiketa_DBDataSet;
         private System.Windows.Forms.BindingSource etiketakBindingSource;
-        private Etiketa_DBDataSetTableAdapters.etiketakTableAdapter etiketakTableAdapter;
         private System.Windows.Forms.Button Xml_print;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button btn_Gelditu;

@@ -15,8 +15,6 @@ namespace BarTenderEtiketak
         [STAThread]
         static void Main()
         {
-            //XmlReader reader= new XmlReader (@"C:\bt\XML\froga.xml");
-            //reader.ReadXml();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
