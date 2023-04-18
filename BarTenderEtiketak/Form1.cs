@@ -25,13 +25,16 @@ namespace BarTenderEtiketak
         private AutoResetEvent fileCreatedEvent = new AutoResetEvent(false);
         string xmlFilePath;//ERP-ak sortzen duen xml-aren ruta osoa (karpeta+fitxategi izena)
         XmlDocument xmlDoc, xmlWebService, xmlosoa;
-        LabelFormatDocument etiketa, etiketaGarantia;
+        LabelFormatDocument etiketa, etiketaGarantia, etiketaCode;
         FileSystemWatcher watcher = null;
         private Thread begiraleThread;
         private bool begira = false;
         List<string> fileNames = new List<string>();
         string etiketaFormatoa;
         Engine btEngine;
+        string intermec = "Intermec PM43c_406_BACKUP";
+        string pdf = "Microsoft Print to Pdf";
+        string konica = "KONICA MINOLTA Admin";
 
 
         public Form1()
@@ -118,10 +121,12 @@ namespace BarTenderEtiketak
                 //etiketa ireki formatoaren arabera
                 etiketa = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORM00" + etiketaFormatoa + ".btw");
                 etiketaGarantia = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORMGARANTIA.btw");
+                etiketaCode = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORMBARCODE.btw");
 
 
-                //BaloreakAsignatu(rootNode, etiketa);
-                BaloreakAsignatu(rootNode, etiketaGarantia);
+                BaloreakAsignatu(rootNode, etiketa, pdf);
+                BaloreakAsignatu(rootNode, etiketaCode, pdf);
+                //BaloreakAsignatu(rootNode, etiketaGarantia, konica);
 
                 //crea un objeto de la clase XmlDeleter
                 XmlDeleter deleter = new XmlDeleter();
@@ -157,7 +162,7 @@ namespace BarTenderEtiketak
             }));
         }
 
-        private void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa)
+        private void BaloreakAsignatu(XmlNode nodoXml, LabelFormatDocument etiketa, string inpresora)
         {
             string nodoIzena = "";
             string nodoBalorea = "";
@@ -205,7 +210,7 @@ namespace BarTenderEtiketak
                                 // Asignar el valor de la variable a la variable de la etiqueta
                                 aldagaia.Value = nodoBalorea;
 
-                                Inprimatu(etiketa);
+                                Inprimatu(etiketa, inpresora);
                             }
                         }
                     }
@@ -270,7 +275,7 @@ namespace BarTenderEtiketak
             }
         }
 
-        private static void Inprimatu(LabelFormatDocument etiketa)
+        private static void Inprimatu(LabelFormatDocument etiketa, string inpresora)
         {
             //inpresio motorea sortu
             Engine btEngine = new Engine();
@@ -281,7 +286,8 @@ namespace BarTenderEtiketak
             // Inpresora konfiguratu
             //etiketa.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
             //etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
-            etiketa.PrintSetup.PrinterName = "KONICA MINOLTA Admin";
+            //etiketa.PrintSetup.PrinterName = "KONICA MINOLTA Admin";
+            etiketa.PrintSetup.PrinterName = inpresora;
 
             // etiketa inprimatu
             etiketa.Print();
