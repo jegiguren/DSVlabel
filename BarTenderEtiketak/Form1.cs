@@ -24,8 +24,8 @@ namespace BarTenderEtiketak
         string directoryPath = @"C:\bt\XML";//ERP-ak xml-ak uzten dituen karpeta
         private AutoResetEvent fileCreatedEvent = new AutoResetEvent(false);
         string xmlFilePath;//ERP-ak sortzen duen xml-aren ruta osoa (karpeta+fitxategi izena)
-        XmlDocument xmlDoc, xmlWebService, xmlosoa; 
-        LabelFormatDocument etiketa;
+        XmlDocument xmlDoc, xmlWebService, xmlosoa;
+        LabelFormatDocument etiketa, etiketaGarantia;
         FileSystemWatcher watcher = null;
         private Thread begiraleThread;
         private bool begira = false;
@@ -117,9 +117,11 @@ namespace BarTenderEtiketak
 
                 //etiketa ireki formatoaren arabera
                 etiketa = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORM00" + etiketaFormatoa + ".btw");
+                etiketaGarantia = btEngine.Documents.Open(@"C:\bt\etiketak aldagaiekin\FORMGARANTIA.btw");
 
 
-                BaloreakAsignatu(rootNode, etiketa);          
+                //BaloreakAsignatu(rootNode, etiketa);
+                BaloreakAsignatu(rootNode, etiketaGarantia);
 
                 //crea un objeto de la clase XmlDeleter
                 XmlDeleter deleter = new XmlDeleter();
@@ -278,7 +280,8 @@ namespace BarTenderEtiketak
 
             // Inpresora konfiguratu
             //etiketa.PrintSetup.PrinterName = "Intermec PM43c_406_BACKUP";
-            etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+            //etiketa.PrintSetup.PrinterName = "Microsoft Print to Pdf";
+            etiketa.PrintSetup.PrinterName = "KONICA MINOLTA Admin";
 
             // etiketa inprimatu
             etiketa.Print();
