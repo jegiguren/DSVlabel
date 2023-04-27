@@ -1,4 +1,4 @@
-﻿namespace BarTenderEtiketak
+﻿namespace DSVlabel
 {
     partial class Form1
     {
@@ -41,10 +41,6 @@
             // 
             this.etiketakBindingSource.DataMember = "etiketak";
             // 
-         
-            // 
-           
-            // 
             // Xml_print
             // 
             this.Xml_print.Location = new System.Drawing.Point(52, 33);
@@ -78,9 +74,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(52, 120);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 13;
-            this.label1.Text = "Inprimatzen...";
+            this.label1.Text = "Prozesatzen...";
             // 
             // Form1
             // 

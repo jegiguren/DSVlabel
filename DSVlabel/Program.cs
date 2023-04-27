@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace BarTenderEtiketak
+namespace DSVlabel
 {
     internal static class Program
     {
