@@ -148,6 +148,7 @@ namespace DSVlabel
             // Cerrar el objeto Document y el objeto PdfReader
             doc.Close();
             reader.Close();
+            //froga
         }
 
         private void KoloreaAldatu()
